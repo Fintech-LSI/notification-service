@@ -1,0 +1,29 @@
+package com.fintech.notification.controller;
+
+
+import com.fintech.notification.dto.NotificationRequest;
+import com.fintech.notification.dto.NotificationResponse;
+import com.fintech.notification.model.Notification;
+import com.fintech.notification.service.NotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/notifications")
+public class NotificationController {
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @PostMapping
+    public Notification createNotification(@RequestBody NotificationRequest notificationRequest) {
+        return notificationService.save(notificationRequest.toEntity());
+    }
+
+    @GetMapping
+    public List<NotificationResponse> getAllNotifications() {
+        return notificationService.getAllResponses();
+    }
+}
