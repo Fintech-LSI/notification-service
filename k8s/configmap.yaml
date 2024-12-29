@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notification-service-config
+  namespace: notification
+data:
+  application.yml: |-
+    server:
+      port: 8080
+    
+    spring:
+      application:
+        name: notification-service
+      cloud:
+        discovery:
+          enabled: true
+      rabbitmq:
+        host: rabbitmq-service
+        port: 5672
+        username: guest
+        password: guest
+
+    eureka:
+      client:
+        serviceUrl:
+          defaultZone: http://discovery-service:8761/eureka/
+        register-with-eureka: true
+        fetch-registry: true
+      instance:
+        prefer-ip-address: true
