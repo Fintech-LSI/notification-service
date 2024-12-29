@@ -26,4 +26,9 @@ public class NotificationController {
     public List<NotificationResponse> getAllNotifications() {
         return notificationService.getAllResponses();
     }
+    // New endpoint to fetch notifications by user ID
+    @GetMapping("/user/{userId}")
+    public List<NotificationResponse> getNotificationsByUserId(@PathVariable Long userId) {
+        return notificationService.getNotificationsByUserId(userId);
+    }
 }

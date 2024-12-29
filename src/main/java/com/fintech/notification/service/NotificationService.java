@@ -14,14 +14,34 @@ public class NotificationService {
 
     @Autowired
     private NotificationRepository notificationRepository;
-
+    @Autowired
+    private UserServiceClient userServiceClient;
     public Notification save(Notification notification) {
         return notificationRepository.save(notification);
     }
 
     public List<NotificationResponse> getAllResponses() {
         return notificationRepository.findAll().stream()
-                .map(NotificationResponse::fromEntity)
+                .map(notification -> {
+                    NotificationResponse response = NotificationResponse.fromEntity(notification);
+                    System.out.println(response);
+                    String userName = userServiceClient.getUserNameById(notification.getUserId());
+
+                    response.setRecipient(userName); // Replace recipient with user name
+                    return response;
+                })
+                .collect(Collectors.toList());
+    }
+
+    // New method to fetch notifications by user ID
+    public List<NotificationResponse> getNotificationsByUserId(Long userId) {
+        return notificationRepository.findByUserId(userId).stream()
+                .map(notification -> {
+                    NotificationResponse response = NotificationResponse.fromEntity(notification);
+                    String userName = userServiceClient.getUserNameById(userId);
+                    response.setRecipient(userName); // Set recipient as the user name
+                    return response;
+                })
                 .collect(Collectors.toList());
     }
 }
