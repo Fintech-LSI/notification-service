@@ -35,7 +35,7 @@ spec:
                   name: mysql-credentials
                   key: password
             - name: SPRING_PROFILES_ACTIVE
-              value: "native"
+              value: "default"
           resources:
             requests:
               memory: "512Mi"
