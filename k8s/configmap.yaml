@@ -22,7 +22,7 @@ data:
     
     user:
       service:
-        url: http://user-service:8090
+        url: http://user-service:8090/
     
     management:
       endpoints:
