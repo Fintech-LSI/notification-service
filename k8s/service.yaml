@@ -4,9 +4,9 @@ metadata:
   name: notification-service
   namespace: fintech
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
-    - port: 80
+    - port: 8085
       targetPort: 8085
   selector:
     app: notification-service
