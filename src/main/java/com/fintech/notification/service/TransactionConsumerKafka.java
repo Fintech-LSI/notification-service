@@ -20,7 +20,6 @@ public class TransactionConsumerKafka {
     Notification notification = new Notification();
     notification.setUserId(request.getUserId());
     notification.setMessage(request.getMessage());
-    notification.setRecipient(request.getRecipient());
     notificationService.save(notification);
   }
 }

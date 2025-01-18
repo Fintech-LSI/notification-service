@@ -14,7 +14,6 @@ public class NotificationRequest {
     public Notification toEntity() {
         Notification notification = new Notification();
         notification.setUserId(this.userId);
-        notification.setRecipient(this.recipient);
         notification.setMessage(this.message);
         //notification.setTimestamp(this.timestamp);
         return notification;
