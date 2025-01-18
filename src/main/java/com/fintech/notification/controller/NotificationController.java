@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/notifications")
+@RequestMapping("/api/notifications")
 public class NotificationController {
 
     @Autowired
@@ -20,6 +20,11 @@ public class NotificationController {
     @PostMapping
     public Notification createNotification(@RequestBody NotificationRequest notificationRequest) {
         return notificationService.save(notificationRequest.toEntity());
+    }
+
+    @GetMapping("/test")
+    public String test() {
+      return "notification is running";
     }
 
     @GetMapping

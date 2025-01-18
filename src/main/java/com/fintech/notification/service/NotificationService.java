@@ -1,6 +1,6 @@
 package com.fintech.notification.service;
 
-import com.fintech.notification.dto.NotificationRepository;
+import com.fintech.notification.repository.NotificationRepository;
 import com.fintech.notification.dto.NotificationResponse;
 import com.fintech.notification.model.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,7 @@ public class NotificationService {
     private NotificationRepository notificationRepository;
     @Autowired
     private UserServiceClient userServiceClient;
+
     public Notification save(Notification notification) {
         return notificationRepository.save(notification);
     }

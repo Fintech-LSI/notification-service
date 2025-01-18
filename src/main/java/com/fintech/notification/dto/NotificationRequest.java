@@ -9,14 +9,14 @@ public class NotificationRequest {
     private Long userId;
     private String recipient;
     private String message;
-    private LocalDateTime timestamp;
+    //private LocalDateTime timestamp;
 
     public Notification toEntity() {
         Notification notification = new Notification();
         notification.setUserId(this.userId);
         notification.setRecipient(this.recipient);
         notification.setMessage(this.message);
-        notification.setTimestamp(this.timestamp);
+        //notification.setTimestamp(this.timestamp);
         return notification;
     }
 }

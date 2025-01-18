@@ -1,4 +1,4 @@
-package com.fintech.notification.dto;
+package com.fintech.notification.repository;
 
 import com.fintech.notification.model.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;

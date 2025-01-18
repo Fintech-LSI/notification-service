@@ -1,9 +1,6 @@
 package com.fintech.notification.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -19,6 +16,13 @@ public class Notification {
     private String recipient;
     private String message;
     private LocalDateTime timestamp;
+
+    @PrePersist
+    public void prePersist() {
+      if (timestamp == null) {
+        this.timestamp = LocalDateTime.now();
+      }
+    }
 
     // Getters and Setters
 }

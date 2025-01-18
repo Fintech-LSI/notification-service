@@ -2,10 +2,9 @@ package com.fintech.notification.dto;
 
 import com.fintech.notification.model.Notification;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
+
+
 @Data
 public class NotificationResponse {
     private Long id;
