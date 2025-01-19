@@ -17,7 +17,7 @@ public class UserServiceClient {
 
     public String getUserNameById(Long userId) {
 
-            String url = userServiceUrl + "/api/users/" + userId+"/name";
+            String url = userServiceUrl + "/api/users/" + userId;
             System.out.println(url);
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
             System.out.println(response.getBody());

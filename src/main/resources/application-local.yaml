@@ -1,0 +1,30 @@
+spring:
+  config:
+    import: optional:configserver:http://localhost:8889
+  application:
+    name: notification-service
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: notification-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.fintech.notification.dto.NotificationRequest
+        spring.json.use.type.headers: false  # Changed to true
+
+
+
+user:
+  service:
+    url: http://localhost:8090
+
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

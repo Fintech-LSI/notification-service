@@ -1,4 +1,4 @@
-package com.fintech.notification.dto;
+package com.fintech.notification.repository;
 
 import com.fintech.notification.model.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findByUserId(Long userId);
+    List<Notification> findByUserIdAndIsRead(Long userId, boolean read); // New method
+
 }
