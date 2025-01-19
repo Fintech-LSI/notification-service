@@ -11,22 +11,27 @@ The **Notification Service** is responsible for:
 
 
 ## Project Structure
-src/main/java/com.fintech.notification/
-├── config/ # Configuration files
-│ └── RestTemplateConfig
-├── controller/ # REST controllers
-│ └── NotificationController
-├── dto/ # Data Transfer Objects
-│ ├── NotificationRequest
-│ └── NotificationResponse
-├── model/ # Domain entities
-│ └── Notification
-├── repository/ # Data repositories
-│ └── NotificationRepository
-├── service/ # Business logic
-│ ├── NotificationService
-│ └── UserServiceClient
+src/main/java/com/fintech/notification/
+├── config/                   # Configuration files
+│   └── RestTemplateConfig.java
+├── controller/               # REST controllers
+│   └── NotificationController.java
+├── dto/                      # Data Transfer Objects
+│   ├── NotificationRequest.java
+│   └── NotificationResponse.java
+├── exception/                # Custom exceptions and handlers
+│   └── NotificationException.java
+├── model/                    # Domain entities
+│   └── Notification.java
+├── repository/               # Data repositories
+│   └── NotificationRepository.java
+├── service/                  # Business logic
+│   ├── NotificationService.java
+│   └── UserServiceClient.java
+├── util/                     # Utility classes
+│   └── NotificationUtils.java
 └── NotificationApplication.java
+
 
 
 ## Tech Stack
