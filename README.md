@@ -11,6 +11,8 @@ The **Notification Service** is responsible for:
 
 
 ## Project Structure
+
+```
 src/main/java/com/fintech/notification/
 ├── config/                   # Configuration files
 │   └── RestTemplateConfig.java
@@ -31,7 +33,7 @@ src/main/java/com/fintech/notification/
 ├── util/                     # Utility classes
 │   └── NotificationUtils.java
 └── NotificationApplication.java
-
+```
 
 
 ## Tech Stack
