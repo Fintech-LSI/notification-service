@@ -1,12 +1,17 @@
+
 spring:
     config:
-        import: optional:configserver:http://localhost:8889
+        import: optional:configserver:http://config-service:8889
     application:
         name: notification-service
 user:
     service:
-        url: http://localhost:8090
+        url: http://user-service:8090
 
-eureka:
-    instance:
-        prefer-ip-address: true
+
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: "*"

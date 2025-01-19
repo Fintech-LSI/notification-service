@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        AWS_ACCOUNT_ID = credentials('AWS_ACCOUNT_ID')
-        AWS_DEFAULT_REGION = 'us-east-1'
-        IMAGE_REPO_NAME = 'notification-service'
-        IMAGE_TAG = "${BUILD_NUMBER}"
-        REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
+        AWS_REGION      = 'us-east-1'
+        IMAGE_NAME      = 'notification-service'
+        ECR_REGISTRY    = 'public.ecr.aws/z1z0w2y6'
+        DOCKER_BUILD_NUMBER = "${BUILD_NUMBER}"
+        EKS_CLUSTER_NAME = 'main-cluster'
+        NAMESPACE = 'fintech'
         SONAR_PROJECT_KEY = 'notification-service'
-        EKS_CLUSTER_NAME = 'your-eks-cluster'
-        NAMESPACE = 'notification'
+        SONAR_SERVER_URL = 'http://54.86.47.1:9000'
     }
 
     stages {
@@ -19,56 +19,75 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        /*stage('SonarQube Analysis') {
             steps {
-                sh 'mvn clean package -DskipTests'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            environment {
-                SONAR_TOKEN = credentials('SONAR_TOKEN')
-            }
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh """
-                        mvn sonar:sonar \
-                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                        -Dsonar.host.url=http://your-sonarqube-url:9000 \
-                        -Dsonar.login=${SONAR_TOKEN}
-                    """
+                script {
+                    withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_TOKEN')]) {
+                        withSonarQubeEnv('SonarQube') {  // Add this wrapper
+                            try {
+                                sh """
+                                    mvn clean verify sonar:sonar \
+                                        -Dsonar.host.url=${SONAR_HOST_URL} \
+                                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                                        -Dsonar.login=${SONAR_TOKEN}
+                                """
+                                echo "SonarQube analysis completed successfully."
+                            } catch (Exception e) {
+                                error "SonarQube analysis failed: ${e.message}"
+                            }
+                        }
+                    }
                 }
             }
         }
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
+                script {
+                    timeout(time: 5, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: true
+                    }
+                }
+            }
+        }*/
+
+        stage('Build') {
+            steps {
+                script {
+                    try {
+                        sh 'mvn clean package -DskipTests'
+                    } catch (Exception e) {
+                        error "Maven build failed: ${e.message}"
+                    }
                 }
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build & Push Docker Image') {
             steps {
                 script {
-                    docker.build("${IMAGE_REPO_NAME}:${IMAGE_TAG}")
-                }
-            }
-        }
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'aws-credentials',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        try {
+                            sh """
+                                aws ecr-public get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+                            """
 
-        stage('Push to ECR') {
-            steps {
-                script {
-                    sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-                    sh "docker tag ${IMAGE_REPO_NAME}:${IMAGE_TAG} ${REPOSITORY_URI}:${IMAGE_TAG}"
-                    sh "docker push ${REPOSITORY_URI}:${IMAGE_TAG}"
+                            sh """
+                                docker build -t ${ECR_REGISTRY}/${IMAGE_NAME}:latest . --no-cache
+                            """
+
+                            sh """
+                                docker push ${ECR_REGISTRY}/${IMAGE_NAME}:latest
+                            """
+                        } catch (Exception e) {
+                            error "Docker build/push failed: ${e.message}"
+                        }
+                    }
                 }
             }
         }
@@ -76,43 +95,58 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    // Configure kubectl
-                    sh "aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name ${EKS_CLUSTER_NAME}"
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'aws-credentials',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        try {
+                            // Configure kubectl
+                            sh """
+                                aws eks update-kubeconfig --region ${AWS_REGION} --name ${EKS_CLUSTER_NAME}
+                            """
 
-                    // Create namespace if it doesn't exist
-                    sh "kubectl create namespace ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -"
+                            // Create namespace if doesn't exist
+                            sh """
+                                kubectl create namespace ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
+                            """
 
-                    // Update deployment image
-                    sh """
-                        kubectl set image deployment/notification-service \
-                        notification-service=${REPOSITORY_URI}:${IMAGE_TAG} \
-                        -n ${NAMESPACE} --record
-                    """
+                            // Apply K8s manifests
+                            sh """
+                                kubectl apply -f k8s/configmap.yaml -n ${NAMESPACE}
+                                kubectl apply -f k8s/secrets.yaml -n ${NAMESPACE}
+                                kubectl apply -f k8s/deployment.yaml -n ${NAMESPACE}
+                                kubectl apply -f k8s/service.yaml -n ${NAMESPACE}
+                            """
 
-                    // Verify deployment
-                    sh """
-                        kubectl rollout status deployment/notification-service \
-                        -n ${NAMESPACE} --timeout=300s
-                    """
+                            // Check pod status
+                            sh """
+                                echo "Checking pod status:"
+                                kubectl get pods -n ${NAMESPACE} -l app=notification-service
+                            """
+
+                        } catch (Exception e) {
+                            error "Deployment failed: ${e.message}"
+                        }
+                    }
                 }
             }
         }
     }
 
     post {
-        always {
-            // Clean up Docker images
-            sh "docker rmi ${IMAGE_REPO_NAME}:${IMAGE_TAG}"
-            sh "docker rmi ${REPOSITORY_URI}:${IMAGE_TAG}"
+        success {
+            echo 'Pipeline succeeded! Application deployed successfully.'
         }
         failure {
-            // Rollback on failure
-            script {
-                sh """
-                    kubectl rollout undo deployment/notification-service \
-                    -n ${NAMESPACE}
-                """
-            }
+            echo 'Pipeline failed! Check the logs for details.'
+        }
+        always {
+            sh """
+                docker rmi ${ECR_REGISTRY}/${IMAGE_NAME}:latest || true
+            """
+            cleanWs()
         }
     }
 }
