@@ -1,16 +1,18 @@
-# Notification Service 🚀
+# 📨 Notification Service
 
-A **Spring Boot** microservice designed to manage notifications within a **fintech ecosystem**. 📨
+A Spring Boot microservice for managing notifications in a fintech ecosystem. 🚀
 
-## Overview
+## 🔍 Overview
 
-The **Notification Service** is responsible for:
-- 📤 Sending notifications to users
-- ⚙️ Managing notification preferences
-- 🔗 Integrating with other microservices for user data
+The Notification Service handles:
 
+- 📤 User notification delivery
 
-## Project Structure
+- ⚙️ Notification preference management
+
+- 🔗 Cross-service user data integration
+
+## 📂 Project Structure
 
 ```
 src/main/java/com/fintech/notification/
@@ -143,15 +145,16 @@ The service includes monitoring integration for:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## Contributors
+## 👥 Team
 
-| Name | Role | GitHub |
-|------|------|--------|
-| Zakariae Azarkan | DevOps Engineer | [@zachary013](https://github.com/zachary013) |
-| El Mahdi Id Lahcen | Frontend Developer | [@goalaphx](https://github.com/goalaphx) |
-| Hodaifa | Cloud Architect | [@hodaifa-ech](https://github.com/hodaifa-ech) |
-| Khalil El Houssine | Backend Developer | [@khalilh2002](https://github.com/khalilh2002) |
-| Mohamed Amine BAHASSOU | ML Engineer | [@Medamine-Bahassou](https://github.com/Medamine-Bahassou) |
+| Avatar                                                                                                  | Name | Role | GitHub |
+|---------------------------------------------------------------------------------------------------------|------|------|--------|
+| <img src="https://github.com/zachary013.png" width="50" height="50" style="border-radius: 50%"/>        | Zakariae Azarkan | DevOps Engineer | [@zachary013](https://github.com/zachary013) |
+| <img src="https://github.com/goalaphx.png" width="50" height="50" style="border-radius: 50%"/>          | El Mahdi Id Lahcen | Frontend Developer | [@goalaphx](https://github.com/goalaphx) |
+| <img src="https://github.com/hodaifa-ech.png" width="50" height="50" style="border-radius: 50%"/>       | Hodaifa | Cloud Architect | [@hodaifa-ech](https://github.com/hodaifa-ech) |
+| <img src="https://github.com/khalilh2002.png" width="50" height="50" style="border-radius: 50%"/>       | Khalil El Houssine | Backend Developer | [@khalilh2002](https://github.com/khalilh2002) |
+| <img src="https://github.com/Medamine-Bahassou.png" width="50" height="50" style="border-radius: 50%"/> | Mohamed Amine BAHASSOU | ML Engineer | [@Medamine-Bahassou](https://github.com/Medamine-Bahassou) |
+
 
 ## License
 
